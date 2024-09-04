@@ -25,6 +25,11 @@ jobs:
         python-version: ${{ github.event.inputs.version }}
         architecture: ${{ github.event.inputs.architecture }}
 
+    - name: Install dependencies
+      run: |
+       python -m pip install --upgrade pip
+      shell: pwsh
+
     - name: Validate version
       run: |
         python --version
