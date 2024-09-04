@@ -13,11 +13,8 @@ on:
 jobs:
   test-python:
     name: Test Python ${{ github.event.inputs.version }} ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [windows-latest] 
+    runs-on: windows-latest
+    
     steps:
     - name: Setup Python ${{ github.event.inputs.version }}
       uses: actions/setup-python@main
