@@ -1,0 +1,39 @@
+name: Get Kubernetes Pod Status
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'The environment name (e.g., dev, staging, prod)'
+        required: true
+        default: 'dev'
+      namespace:
+        description: 'The Kubernetes namespace to check'
+        required: true
+        default: 'default'
+
+jobs:
+  get-pod-status:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Kubernetes CLI
+        uses: azure/setup-kubectl@v1
+        with:
+          version: '1.26.0'  # Use the version that matches your cluster
+
+      - name: Configure Kubernetes
+        run: |
+          echo "${{ secrets.K8S_CA_CRT }}" | base64 --decode > /tmp/ca.crt
+          kubectl config set-cluster my-cluster --server=${{ secrets.K8S_SERVER }} --certificate-authority=/tmp/ca.crt
+          kubectl config set-credentials my-user --token=${{ secrets.K8S_TOKEN }}
+          kubectl config set-context my-context --cluster=my-cluster --user=my-user
+          kubectl config use-context my-context
+
+      - name: Get Pod Status
+        run: |
+          echo "Getting pod status in namespace: ${{ github.event.inputs.namespace }} for environment: ${{ github.event.inputs.environment }}"
+          kubectl get pods -n ${{ github.event.inputs.namespace }}
