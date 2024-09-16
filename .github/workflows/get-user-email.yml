@@ -1,19 +1,32 @@
 name: Get User Email
 
 on:
-  workflow_dispatch
-  
+  push:
+    branches:
+      - main
+
 jobs:
   get_user_email:
     runs-on: ubuntu-latest
     name: A job to get a user's email
     steps:
-      - name: Get email
-        id: test
-        uses: evvanErb/get-github-email-by-username-action@v1.25
-        with:
-          github-username: ${{ github.actor }}
-      
-      # Use the output from the `test` step
+      - name: Get user email
+        id: get-email
+        run: |
+          # Fetch user email using GitHub API
+          response=$(curl -s -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
+            https://api.github.com/users/${{ github.actor }})
+          
+          # Check if the response contains the email
+          email=$(echo "$response" | jq -r '.email')
+
+          if [ "$email" = "null" ] || [ -z "$email" ]; then
+            echo "No email found for user ${{ github.actor }}"
+            exit 1
+          else
+            echo "The email is $email"
+            echo "::set-output name=email::$email"
+          fi
+
       - name: Print the found email
-        run: echo "The email is ${{ steps.test.outputs.email }}"
+        run: echo "The email is ${{ steps.get-email.outputs.email }}"
