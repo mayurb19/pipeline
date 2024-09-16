@@ -13,10 +13,10 @@ jobs:
         id: get_user_email
         run: |
           # Fetch the actor's email using GitHub API
-          response=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+          response=$(curl -s -H "Authorization: token ${{ secrets.TOKEN }}" \
                           -H "Accept: application/vnd.github.v3+json" \
                           https://api.github.com/users/${{ github.actor }})
           email=$(echo "$response" | jq -r '.email')
           echo "User email: $email"
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TOKEN: ${{ secrets.TOKEN }}
