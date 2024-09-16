@@ -2,17 +2,17 @@ name: Get user Email address
 
 on:
   workflow_dispatch:
+
 jobs:
-get_user_email:
-runs-on: ubuntu-latest
-name: A job to get a users email
-steps:
-  - name: get email
-    id: test
-    uses: evvanErb/get-github-email-by-username-action@v1.25
-    with:
-      github-username: ${{ github.triggering_actor }}
+  get_user_email:
+    runs-on: ubuntu-latest
+    steps:
+      - name: get email
+        id: test
+        uses: evvanErb/get-github-email-by-username-action@v1.25
+        with:
+          github-username: ${{ github.triggering_actor }}
       
   # Use the output from the `test` step
-  - name: Print the found email
-    run: echo "The email is ${{ steps.test.outputs.email }}"
+      - name: Print the found email
+        run: echo "The email is ${{ steps.test.outputs.email }}"
