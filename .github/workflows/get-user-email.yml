@@ -6,13 +6,14 @@ jobs:
   get_user_email:
     runs-on: ubuntu-latest
     name: A job to get a users email
+    environment: test
     steps:
       - name: get email
         id: test
         uses: evvanErb/get-github-email-by-username-action@v1.25
         with:
           github-username: 'evvanErb' # This is the input username
-          token: 'token' # This is an optional input of a PAT to use a more reliable way to get a user's email
+          token: ${{ secrets.TOKEN }} # This is an optional input of a PAT to use a more reliable way to get a user's email
           
       # Use the output from the `test` step
       - name: Print the found email
