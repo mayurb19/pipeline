@@ -12,9 +12,9 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
-      PARENT_REPOSITORY: 'ab-inbev-analytics/abi_insights_copilot'
+      PARENT_REPOSITORY: ''
       CHECKOUT_BRANCH: 'staging'
-      OWNER: 'ab-inbev-analytics'
+      OWNER: ''
 
     steps:
       - name: Checkout current repository
@@ -53,7 +53,7 @@ jobs:
           import os
           with open('diff.txt', 'r') as file:
             lines = file.read().splitlines()
-          flags = {'abi_insights_copilot_backend': 'false', 'abi_insights_copilot_engine': 'false', 'abi_insights_copilot_frontend': 'false'}
+          flags = {'': 'false'}
           labels = []
           for line in lines:
             dir = os.path.basename(line)
