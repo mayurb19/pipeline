@@ -1,0 +1,82 @@
+name: Staging Engine repository Submodule Update
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - staging
+
+jobs:
+  monorepo-update:
+    name: Engine Submodule update
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
+      PARENT_REPOSITORY: 'ab-inbev-analytics/abi_insights_copilot'
+      CHECKOUT_BRANCH: 'staging'
+      OWNER: 'ab-inbev-analytics'
+
+    steps:
+      - name: Checkout current repository
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}  # GitHub token for authentication
+          ref: ${{ env.CHECKOUT_BRANCH }}     # Dynamic branch name to checkout
+          fetch-depth: 0                      # Fetch full history for deep clone
+
+      - name: Checkout parent repository and branch
+        uses: actions/checkout@v3
+        with:
+            token: ${{ env.GITHUB_TOKEN }}
+            repository: ${{ env.PARENT_REPOSITORY }}
+            ref: ${{ env.CHECKOUT_BRANCH }}
+            submodules: true
+            fetch-depth: 0
+
+      - name: Update submodules
+        id: submodule_update
+        shell: bash
+        run: |
+            set -x
+            export GIT_TRACE=1
+            git config user.name github-actions
+            git config user.email github-actions@github.com
+            git submodule update --remote --progress
+            git diff --name-only > diff.txt
+            echo "::set-output name=TAG::$(git diff --name-only | grep '/' | awk -F/ '{print $NF}')"
+
+      - name: Set up flags for submodule change
+        id: set_flags
+        run: |
+          cat diff.txt
+          python3 -c "
+          import os
+          with open('diff.txt', 'r') as file:
+            lines = file.read().splitlines()
+          flags = {'abi_insights_copilot_backend': 'false', 'abi_insights_copilot_engine': 'false', 'abi_insights_copilot_frontend': 'false'}
+          labels = []
+          for line in lines:
+            dir = os.path.basename(line)
+            if dir in flags:
+              flags[dir] = 'true'
+              labels.append(dir)
+          
+          # Get the current repository name
+          repo_name = os.getenv('GITHUB_REPOSITORY').split('/')[-1]
+          
+          # Set the label to the current repository name
+          label = repo_name
+          
+          # Write outputs to GitHub Actions environment
+          for flag, value in flags.items():
+            print(f'::set-output name={flag}_flag::{value}')
+          
+          print(f'::set-output name=labels::{label}')"
+
+      - name: Commit submodule updates directly to staging branch
+        run: |
+          set -x
+          git checkout staging
+          git add .
+          git commit -am "Updating submodules" || echo "No changes to commit"
+          git push origin staging
