@@ -12,9 +12,9 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
-      PARENT_REPOSITORY: ''
+      PARENT_REPOSITORY: 'mayurb19/submodule-testing'
       CHECKOUT_BRANCH: 'staging'
-      OWNER: ''
+      OWNER: 'mayurb19'
 
     steps:
       - name: Checkout current repository
@@ -53,7 +53,7 @@ jobs:
           import os
           with open('diff.txt', 'r') as file:
             lines = file.read().splitlines()
-          flags = {'': 'false'}
+          flags = {'pipeline': 'false'}
           labels = []
           for line in lines:
             dir = os.path.basename(line)
