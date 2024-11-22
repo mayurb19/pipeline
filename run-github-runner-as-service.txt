@@ -1,0 +1,30 @@
+Configure GITHUB runner as a Service 
+Installing the service
+Stop the self-hosted runner application if it is currently running.
+
+Install the service with the following command:
+
+sudo ./svc.sh install
+Alternatively, the command takes an optional user argument to install the service as a different user.
+
+./svc.sh install USERNAME
+Starting the service
+Start the service with the following command:
+
+sudo ./svc.sh start
+Checking the status of the service
+Check the status of the service with the following command:
+
+sudo ./svc.sh status
+For more information on viewing the status of your self-hosted runner, see "Monitoring and troubleshooting self-hosted runners."
+
+Stopping the service
+Stop the service with the following command:
+
+sudo ./svc.sh stop
+Uninstalling the service
+Stop the service if it is currently running.
+
+Uninstall the service with the following command:
+
+sudo ./svc.sh uninstall
